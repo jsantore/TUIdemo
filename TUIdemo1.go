@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/xuri/excelize/v2"
-	"log"
 )
 
 type DataScreen struct {
@@ -19,7 +20,7 @@ var dataDisplay DataScreen
 
 func main() {
 	dataToDisplay := getData("JobData.xlsx")
-
+	dataToDisplay = dataToDisplay[1:] //the first item is the header row
 	firstItem := dataToDisplay[dataDisplay.currentItem]
 	makeDataDisplay()
 	dataDisplay.Company.SetText(firstItem[0])
@@ -92,16 +93,16 @@ func makeDataDisplay() {
 
 }
 
-// the getData function from the cache Demo
+// getData function uses excelize to get a slice of string slices
 func getData(fileName string) [][]string {
 	excelFile, err := excelize.OpenFile(fileName)
 	defer excelFile.Close()
 	if err != nil {
 		log.Fatalln("couldn't open file", err)
 	}
-	all_rows, err := excelFile.GetRows("Comp490 Jobs")
+	allRows, err := excelFile.GetRows("Comp490 Jobs")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return all_rows
+	return allRows
 }
