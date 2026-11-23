@@ -27,22 +27,8 @@ func main() {
 	dataDisplay.JobTitle.SetText(firstItem[9])
 	dataDisplay.Location.SetText(firstItem[4])
 	dataDisplay.IsUSA.SetChecked(firstItem[3] == "us")
-	app := tview.NewApplication()
-	form := tview.NewForm()
-	form.SetBorder(true)
-	form.AddFormItem(dataDisplay.Company)
-	form.AddFormItem(dataDisplay.JobTitle)
-	form.AddFormItem(dataDisplay.Location)
-	form.AddFormItem(dataDisplay.IsUSA)
 
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == 'q' {
-			app.Stop()
-		}
-		return event
-	})
-
-	moveToPrev := func() {
+	moveToPrev := func() { //setup as a closure in order to use dataToDisplay
 		dataDisplay.currentItem--
 		if dataDisplay.currentItem < 0 {
 			dataDisplay.currentItem = 0
@@ -64,16 +50,35 @@ func main() {
 		dataDisplay.Location.SetText(currentItem[4])
 		dataDisplay.IsUSA.SetChecked(currentItem[3] == "us")
 	}
+	app := setupApp(moveToPrev, moveToNext)
+	err := app.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func setupApp(moveToPrev, moveToNext func()) *tview.Application {
+	app := tview.NewApplication()
+	form := tview.NewForm()
+	form.SetBorder(true)
+	form.AddFormItem(dataDisplay.Company)
+	form.AddFormItem(dataDisplay.JobTitle)
+	form.AddFormItem(dataDisplay.Location)
+	form.AddFormItem(dataDisplay.IsUSA)
+
+	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == 'q' {
+			app.Stop()
+		}
+		return event
+	})
 	form.AddButton("Previous", moveToPrev)
 	form.AddButton("Next", moveToNext)
 	form.AddButton("Quit", app.Stop)
 	form.SetBorder(true)
 	form.SetButtonBackgroundColor(tcell.ColorDarkGoldenrod)
 	app.SetRoot(form, true)
-	err := app.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return app
 }
 
 func updateUI() {}
@@ -96,6 +101,9 @@ func makeDataDisplay() {
 // getData function uses excelize to get a slice of string slices
 func getData(fileName string) [][]string {
 	excelFile, err := excelize.OpenFile(fileName)
+	if err != nil {
+		log.Fatalln("couldn't open file", err)
+	}
 	defer excelFile.Close()
 	if err != nil {
 		log.Fatalln("couldn't open file", err)
