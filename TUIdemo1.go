@@ -16,7 +16,7 @@ type DataScreen struct {
 	currentItem int
 }
 
-var dataDisplay DataScreen
+var dataDisplay DataScreen //this is a struct not a pointer, so zero value empty but extant struct
 
 func main() {
 	dataToDisplay := getData("JobData.xlsx")
