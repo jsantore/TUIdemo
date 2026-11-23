@@ -31,7 +31,7 @@ func main() {
 	moveToPrev := func() { //setup as a closure in order to use dataToDisplay
 		dataDisplay.currentItem--
 		if dataDisplay.currentItem < 0 {
-			dataDisplay.currentItem = 0
+			dataDisplay.currentItem = 0 //should we loop around?
 		}
 		currentItem := dataToDisplay[dataDisplay.currentItem]
 		dataDisplay.Company.SetText(currentItem[0])
@@ -42,7 +42,7 @@ func main() {
 	moveToNext := func() {
 		dataDisplay.currentItem++
 		if dataDisplay.currentItem >= len(dataToDisplay) {
-			dataDisplay.currentItem = len(dataToDisplay) - 1
+			dataDisplay.currentItem = len(dataToDisplay) - 1 //should we loop around?
 		}
 		currentItem := dataToDisplay[dataDisplay.currentItem]
 		dataDisplay.Company.SetText(currentItem[0])
